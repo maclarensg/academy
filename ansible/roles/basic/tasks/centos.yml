@@ -1,0 +1,6 @@
+- name: Set authorized key taken from file
+  authorized_key:
+    user: centos
+    state: present
+    key: "{{ lookup('file', '/Users/gavinyap/.ssh/id_rsa.pub') }}"
+  when: ansible_distribution == "CentOS"

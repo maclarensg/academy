@@ -1,0 +1,17 @@
+- hosts: tag_role_ctrl
+  become: false
+  tasks:
+    - name: List all pem and csr files
+      shell: ls *.csr *.pem
+      register: r_csr_pem_files
+    
+    - name: debug
+      debug:
+        var: r_csr_pem_files.stdout_lines
+      
+    - name: Copy ca files
+      fetch: 
+        src: "{{ item }}"
+        dest: "{{ playbook_dir }}/ca/"
+      with_items: "{{ r_csr_pem_files.stdout_lines}}"
+

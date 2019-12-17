@@ -1,0 +1,64 @@
+---
+# tasks file for ctrl
+
+- name: create cfssl directory
+  file:
+    path: /opt/cfssl
+    state: directory
+
+- name: get cfssl package
+  get_url:
+    url: "https://pkg.cfssl.org/R1.2/{{item}}"
+    dest: /opt/cfssl
+    mode: 755
+  with_items:
+    - cfssl_linux-amd64
+    - cfssljson_linux-amd64
+
+- name: create softlink cfssl 
+  file:
+    src: "/opt/cfssl/cfssl_linux-amd64"
+    dest: "/usr/local/bin/cfssl"
+    state: link
+
+- name: create softlink cfssljson
+  file:
+    src: "/opt/cfssl/cfssljson_linux-amd64"
+    dest: "/usr/local/bin/cfssljson"
+    state: link
+
+- name: Copy files to ctrl
+  template:
+    src: "{{item}}.j2"
+    dest: "{{item}}"
+  with_items:
+    - ca-config.json
+    - ca-csr.json
+    - kubernetes-csr.json
+
+- name: Stat ca
+  stat:
+    path: ca.pem
+  register: r_ca
+
+- name: generate CA certs and private key
+  shell: cfssl gencert -initca ca-csr.json | cfssljson -bare ca
+  when: r_ca.stat.exists == false
+
+
+#- name: generate CA certs and private key
+#  shell: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json
+#  when: r_ca.stat.exists == false
+
+- name: cp script to genrate kubernete cert 
+  template: 
+    src: kube-gencert.sh.j2
+    dest: kube-gencert.sh
+    mode: 0755
+    owner: ubuntu
+    group: ubuntu
+  register: r_script
+
+- name: Execute Script
+  shell: sh kube-gencert.sh
+  when: r_script.changed

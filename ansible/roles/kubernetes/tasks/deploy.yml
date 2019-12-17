@@ -1,0 +1,7 @@
+---
+# Import Centos deployment 
+#- import_tasks: deploy_centos.yml
+#  when: ansible_distribution == "CentOS"
+
+- import_tasks: deploy_ubuntu.yml
+  when: ansible_distribution == "Ubuntu"

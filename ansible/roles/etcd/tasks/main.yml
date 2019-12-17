@@ -1,0 +1,23 @@
+---
+# tasks file for etcd
+
+- import_tasks: ubuntu.yml
+  when: ansible_distribution == "Ubuntu"
+
+- import_tasks: centos.yml
+  when: ansible_distribution == "CentOS"
+
+
+- name: Service unit
+  template:
+    src: etcd.service.j2
+    dest: /etc/systemd/system/etcd.service
+  notify:
+    - daemon reload
+    #- start etcd
+  tags:
+    - configuration
+  
+
+
+  

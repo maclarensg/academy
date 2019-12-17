@@ -1,0 +1,11 @@
+- hosts: tag_role_kube-master
+  become: true
+  gather_facts: true
+  
+- hosts: tag_role_lb-kube
+  become: true
+  gather_facts: true
+  roles:
+    - lb-kube
+  vars:
+    ubuntu_kubernetes_version: "1.17.0-00"

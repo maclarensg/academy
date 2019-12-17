@@ -1,0 +1,67 @@
+- name: Install wget
+  apt:
+    name: wget
+    state: present
+
+- name: "stat etcd-{{etcd_version}}-linux-amd64.tar.gz"
+  stat:
+    path: "/opt/etcd-{{etcd_version}}-linux-amd64.tar.gz"
+  register: r_etcd_pkg
+
+- name: Download etcd package
+  get_url:
+    url: "https://github.com/etcd-io/etcd/releases/download/{{etcd_version}}/etcd-{{etcd_version}}-linux-amd64.tar.gz"
+    dest: /opt/
+  when: r_etcd_pkg.stat.exists == false
+
+- name: unarchive etcd package
+  unarchive:
+    src: "/opt/etcd-{{etcd_version}}-linux-amd64.tar.gz"
+    dest: /opt/
+    remote_src: yes
+  when: r_etcd_pkg.stat.exists
+
+- name: unarchive etcd package
+  unarchive:
+    src: "/opt/etcd-{{etcd_version}}-linux-amd64.tar.gz"
+    dest: /opt/
+    remote_src: yes
+  
+- name: Create a symbolic link
+  file:
+    src: "/opt/etcd-{{etcd_version}}-linux-amd64"
+    dest: /opt/etcd
+    state: link
+  
+- name: create a symlink for etcd's binaries
+  file:
+    src: "/opt/etcd/{{ item }}"
+    dest: /usr/local/bin/{{ item }}
+    state: link
+  with_items:
+    - etcd
+    - etcdctl
+
+- name: Ensure group "etcd" exists
+  group:
+    name: etcd
+    state: present
+
+- name: Add the user 'etcd' exists
+  user:
+    name: etcd
+    shell: /sbin/nologin
+    groups: etcd
+    system: yes
+
+- name: Create data and conf directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: etcd
+    group: etcd
+  with_items:
+    - /var/lib/etcd/
+    - /etc/etcd/
+  
+  

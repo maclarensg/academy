@@ -1,0 +1,12 @@
+---
+# handlers file for etcd
+
+- name: daemon reload
+  systemd:
+    daemon_reload: yes
+
+- name: start etcd 
+  systemd:
+    state: started
+    name: etcd
+    enabled: yes
