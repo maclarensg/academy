@@ -1,0 +1,23 @@
+---
+# tasks file for certificates
+- name: create a directory to store certficates
+  file:
+    path: /certs/
+    state: directory
+  tags:
+    - certs
+
+- name: copy pem files to cert directory
+  copy:
+    src: "{{ item }}"
+    dest: "/certs/{{ item }}"
+  with_items:
+    - ca.pem
+    - ca-key.pem
+    - kubernetes.pem
+    - kubernetes-key.pem
+    - encryption-config.yaml
+  when: "'tag_role_kube-master' in group_names"
+  tags:
+    - certs
+    

@@ -24,3 +24,6 @@
     - "kubectl={{ubuntu_kubernetes_version}}"
   when: "'tag_role_ctrl' in group_names"
 
+- name: Disable swap
+  shell: |
+    swapoff -a

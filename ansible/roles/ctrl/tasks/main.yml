@@ -45,11 +45,6 @@
   shell: cfssl gencert -initca ca-csr.json | cfssljson -bare ca
   when: r_ca.stat.exists == false
 
-
-#- name: generate CA certs and private key
-#  shell: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json
-#  when: r_ca.stat.exists == false
-
 - name: cp script to genrate kubernete cert 
   template: 
     src: kube-gencert.sh.j2
@@ -62,3 +57,33 @@
 - name: Execute Script
   shell: sh kube-gencert.sh
   when: r_script.changed
+
+- name: Copy kube config script
+  template:
+    src: "{{item}}.j2"
+    dest: "{{item}}"
+    mode: 0755
+  with_items:
+    - kube_config.sh
+  register: r_kube_script
+
+- name: Run kubescript
+  shell: ./kube_config.sh
+  when: r_kube_script.changed
+
+
+# Generate an Encryption Key and Include It in a Kubernetes Data Encryption Config File 
+- name: Copy script for encyrption config file
+  template:
+    src: "{{item}}.j2"
+    dest: "{{item}}"
+    mode: 0755
+  with_items:
+    - encrypt.sh
+  register: r_encrypt_script
+
+- name: Run Encrypt script
+  shell: ./encrypt.sh
+  when: r_encrypt_script.changed
+  register: r_encrypt_script_result
+

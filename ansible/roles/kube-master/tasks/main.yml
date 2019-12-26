@@ -1,0 +1,128 @@
+---
+# tasks file for kubernetes_install
+
+- name: Create directory to place kubernetes binaries
+  file:
+    path: /opt/kubernetes
+    state: directory
+  tags:
+    - kubernetes
+
+- name: Stat binaries
+  stat:
+    path: /opt/kubernetes/kubectl
+  register: r_kube_bin
+  tags:
+    - kubernetes
+
+- name: get Kubernetes binaries
+  get_url:
+    url: "https://storage.googleapis.com/kubernetes-release/release/{{kubernetes_release}}/bin/linux/amd64/{{item}}"
+    dest: /opt/kubernetes/
+    mode: 0755
+  with_items:
+    - kube-apiserver 
+    - kube-controller-manager 
+    - kube-scheduler 
+    - kubectl
+  tags:
+    - kubernetes
+  when: r_kube_bin.stat.exists == False
+
+- name: Create a symbolic link
+  file:
+    src: "/opt/kubernetes/{{item}}"
+    dest: "/usr/local/bin/{{item}}"
+    state: link
+  with_items:
+    - kube-apiserver 
+    - kube-controller-manager 
+    - kube-scheduler 
+    - kubectl
+  tags:
+    - kubernetes
+
+- name: Create kubernetes data directory 
+  file:
+    path: /var/lib/kubernetes
+    state: directory
+  tags:
+    - kubernetes
+
+- name: Create kubernetes data directory 
+  file:
+    path: /var/lib/kubernetes
+    state: directory
+  tags:
+    - kubernetes
+
+- name: Copy pem files and the encryption-config.yaml file to /var/lib/kubernetes
+  copy:
+    src: "{{ item }}"
+    dest: "/var/lib/kubernetes/{{ item }}"
+  with_items:
+    - ca.pem
+    - ca-key.pem
+    - kubernetes.pem
+    - kubernetes-key.pem
+    - encryption-config.yaml
+  tags:
+    - kubernetes
+
+- name: create systemd unit file for kube-apiserver
+  template:
+    src: kube-apiserver.service.j2
+    dest: /etc/systemd/system/kube-apiserver.service
+  tags:
+    - kubernetes
+
+- name: copy kubeconfig for kube-controller-manager, kube-scheduler
+  copy:
+    src: "{{ item }}"
+    dest: "/var/lib/kubernetes/{{ item }}"
+  tags:
+    - kubernetes
+  with_items:
+    - kube-controller-manager.kubeconfig
+    - kube-scheduler.kubeconfig 
+  
+- name: create systemd unit file for  kube-controller-manager
+  template:
+    src: kube-controller-manager.service.j2
+    dest: /etc/systemd/system/kube-controller-manager.service
+  tags:
+    - kubernetes
+
+- name: Ensure kubernetes config directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /etc/kubernetes/
+    - /etc/kubernetes/config/
+  tags:
+    - kubernetes
+
+- name: create kube-scheduler.yaml
+  template:
+    src: kube-scheduler.yaml.j2
+    dest: /etc/kubernetes/config/kube-scheduler.yaml
+  tags:
+    - kubernetes
+  
+- name: create systemd unit file for kube-scheduler
+  template:
+    src: kube-scheduler.service.j2
+    dest: /etc/systemd/system/kube-scheduler.service
+  tags:
+    - kubernetes
+
+
+- name: Copy pem files and the encryption-config.yaml file to /var/lib/kubernetes
+  copy:
+    src: "{{ item }}"
+    dest: "{{ ansible_env.HOME }}"
+  with_items:
+    - admin.kubeconfig
+  tags:
+    - kubernetes

@@ -1,6 +1,7 @@
 ---
 all: # keys must be unique, i.e. only one 'hosts' per group
   hosts:
+    192.168.188.178:
     192.168.188.101:
       hostname: m1
       index: 1
@@ -10,10 +11,20 @@ all: # keys must be unique, i.e. only one 'hosts' per group
     192.168.188.103:
       hostname: m3
       index: 3
+    192.168.188.121:
+      hostname: w1
+    192.168.188.122:
+      hostname: w2
     192.168.188.10:
       hostname: ctrl
     192.168.188.100:
-      hostname: haproxy
+      hostname: lb-kube
+    192.168.188.81:
+      hostname: cass01
+    192.168.188.82:
+      hostname: cass02
+    192.168.188.83:
+      hostname: cass03
   vars:
     ansible_ssh_pass: letmein123
     ansible_become_password: letmein123
@@ -23,23 +34,40 @@ all: # keys must be unique, i.e. only one 'hosts' per group
         192.168.188.101:
         192.168.188.102:
         192.168.188.103:
+        192.168.188.121:
+        192.168.188.122:
         192.168.188.10:
         192.168.188.100:
+        192.168.188.81:
+        192.168.188.82:
+        192.168.188.83:
+        192.168.188.178:
     tag_role_kube-master:
       hosts:
         192.168.188.101:
         192.168.188.102:
-        192.168.188.103:
+        #192.168.188.103:
     tag_role_kubes:
       hosts:
         192.168.188.101:
         192.168.188.102:
-        192.168.188.103:
+        #192.168.188.103:
+        192.168.188.121:
+        192.168.188.122:
+    tag_role_kube-worker:
+      hosts:
+        192.168.188.121:
+        192.168.188.122:
+        #192.168.188.103:
     tag_role_ctrl:
       hosts:
         192.168.188.10:
     tag_role_lb-kube:
       hosts:
         192.168.188.100:
-        
+    tag_role_cassandra:
+      hosts: 
+        192.168.188.81:
+        192.168.188.82:
+        192.168.188.83:
         

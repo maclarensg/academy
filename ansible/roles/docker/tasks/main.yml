@@ -21,3 +21,17 @@
     name: "docker-ce={{ ubuntu_docker_version }}"
   tags:
     - docker
+
+- name: Add the user 'ubuntu' to docker group
+  user:
+    name: ubuntu
+    groups: docker
+    append: yes
+  when: ansible_distribution == "Ubuntu"
+
+- name: Add the user 'centos' to docker group
+  user:
+    name: centos
+    groups: docker
+    append: yes
+  when: ansible_distribution == "CentOS"

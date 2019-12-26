@@ -1,11 +1,21 @@
-- hosts: all
+#- hosts: tag_role_kube-master
+#  become: true
+#  gather_facts: true
+#  roles:
+#    - etcd
+#    - kube-master
+#  vars:
+#    etcd_version: "v3.3.18"
+#    kubernetes_release: "v1.10.2"
+
+
+- hosts: tag_role_kube-worker
   become: true
   gather_facts: true
   roles:
-    - etcd
-    - docker 
-    - kubernetes
+    - kube-worker
   vars:
-    etcd_version: "v3.3.18"
-    ubuntu_kubernetes_version: "1.17.0-00"
-    ubuntu_docker_version: "18.06.1~ce~3-0~ubuntu"
+    crit_tools_version: "v1.0.0-beta.0"
+
+
+

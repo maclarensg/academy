@@ -5,7 +5,7 @@
   become: true
   gather_facts: true
   roles:
-    - ctrl
     - kubernetes
+    - ctrl
   vars:
-    ubuntu_kubernetes_version: "1.17.0-00"
+    kubernetes_version: "1.17.0-00"

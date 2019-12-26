@@ -3,20 +3,24 @@
 
 - import_tasks: ubuntu.yml
   when: ansible_distribution == "Ubuntu"
+  tags:
+    - etcd
 
 - import_tasks: centos.yml
   when: ansible_distribution == "CentOS"
-
+  tags:
+    - etcd
 
 - name: Service unit
   template:
     src: etcd.service.j2
     dest: /etc/systemd/system/etcd.service
-  notify:
+  notify: 
     - daemon reload
-    #- start etcd
+    - start etcd 
+    - restart etcd 
   tags:
-    - configuration
+    - etcd
   
 
 

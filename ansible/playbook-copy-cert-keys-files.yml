@@ -1,0 +1,20 @@
+- hosts: tag_role_ctrl
+  become: true
+  tasks:
+    - name: Copy ca and kubebernetes files
+      fetch: 
+        src: "{{ item }}"
+        dest: "{{ playbook_dir }}/ca/"
+      with_items: 
+        - ca.pem
+        - ca.csr
+        - ca-key.pem
+        - kubernetes.pem
+        - kubernetes.csr
+        - kubernetes-key.pem
+        - encryption-config.yaml
+        - kubernetes.kubeconfig
+        - kube-controller-manager.kubeconfig
+        - kube-scheduler.kubeconfig
+        - admin.kubeconfig
+

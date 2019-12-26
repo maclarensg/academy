@@ -7,22 +7,32 @@ Type=notify
 User=etcd
 ExecStart=/usr/local/bin/etcd \
   --name {{ansible_hostname}} \
+  --cert-file=/etc/etcd/kubernetes.pem \
+  --key-file=/etc/etcd/kubernetes-key.pem \
+  --peer-cert-file=/etc/etcd/kubernetes.pem \
+  --peer-key-file=/etc/etcd/kubernetes-key.pem \
+  --trusted-ca-file=/etc/etcd/ca.pem \
+  --peer-trusted-ca-file=/etc/etcd/ca.pem \
+  --peer-client-cert-auth \
+  --client-cert-auth \
   --data-dir=/var/lib/etcd \
-  --initial-advertise-peer-urls http://{{ansible_default_ipv4.address}}:2380 \
-  --listen-peer-urls http://{{ansible_default_ipv4.address}}:2380 \
-  --listen-client-urls http://{{ansible_default_ipv4.address}}:2379,http://127.0.0.1:2379 \
-  --advertise-client-urls http://{{ansible_default_ipv4.address}}:2379 \
+  --initial-advertise-peer-urls https://{{ansible_default_ipv4.address}}:2380 \
+  --listen-peer-urls https://{{ansible_default_ipv4.address}}:2380 \
+  --listen-client-urls https://{{ansible_default_ipv4.address}}:2379,http://127.0.0.1:2379 \
+  --advertise-client-urls https://{{ansible_default_ipv4.address}}:2379 \
   --initial-cluster-token etcd-cluster-0 \
   --initial-cluster {% for host in groups['tag_role_kube-master']-%}
     {%- set etcd_index = loop.index -%}
     {%- for h in groups['tag_role_kube-master'] -%}
         {%- if etcd_index == hostvars[h].index -%}
-        {{hostvars[h].ansible_hostname}}=http://{{hostvars[h].ansible_default_ipv4.address}}:2380
+        {{hostvars[h].ansible_hostname}}=https://{{hostvars[h].ansible_default_ipv4.address}}:2380
         {%- endif -%}
     {%- endfor -%}
     {%- if groups['tag_role_kube-master'] | length != loop.index -%},{%- endif -%}
   {%- endfor%} \
   --initial-cluster-state new 
+Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

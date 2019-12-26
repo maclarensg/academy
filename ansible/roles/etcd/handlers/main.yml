@@ -10,3 +10,8 @@
     state: started
     name: etcd
     enabled: yes
+
+- name: restart etcd 
+  systemd:
+    state: restarted
+    name: etcd

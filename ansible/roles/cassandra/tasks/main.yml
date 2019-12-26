@@ -1,0 +1,39 @@
+---
+# tasks file for cassandra
+
+- name: add cassandra apt-key
+  apt_key:
+    url: https://www.apache.org/dist/cassandra/KEYS 
+    state: present
+
+- name: add cassandra apt repo
+  apt_repository:
+    repo: deb http://www.apache.org/dist/cassandra/debian 39x main
+    state: present
+    filename: cassandra
+
+- name: install cassandra binary
+  apt:
+    name: cassandra
+    state: present
+    update_cache: yes
+  register: r_cassandra_install
+
+- name: ensure cassandra is stopped for the first time after installation
+  systemd:
+    name: cassandra
+    state: stopped
+  when: r_cassandra_install.changed
+
+- name: update cassandra config
+  template:
+    src: cassandra.yml.j2
+    dest:  /etc/cassandra/cassandra.yaml
+  notify: restart cassandra
+
+- name: ensure cassandra is started finally
+  systemd:
+    name: cassandra
+    state: started
+    enabled: yes
+

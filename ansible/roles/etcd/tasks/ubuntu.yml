@@ -63,5 +63,16 @@
   with_items:
     - /var/lib/etcd/
     - /etc/etcd/
-  
-  
+ 
+
+- name: Copy from /certs/ to /etc/etcd/
+  copy:
+    src: "/certs/{{item}}"
+    dest: "/etc/etcd/{{item}}"
+    remote_src: yes
+    owner: etcd
+    group: etcd
+  with_items:
+    - kubernetes.pem
+    - kubernetes-key.pem
+    - ca.pem
