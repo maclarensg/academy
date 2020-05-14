@@ -1,2 +1,0 @@
-ansible_user: centos
-ansible_network_os: network_cli

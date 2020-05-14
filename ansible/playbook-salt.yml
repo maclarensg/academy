@@ -1,7 +1,0 @@
-- hosts: tag_role_salt-master:tag_role_salt-minion
-  become: true
-  gather_facts: true
-  roles:
-    - salt
-    
-   

@@ -1,6 +1,0 @@
-
-- hosts: tag_role_cassandra
-  become: true
-  gather_facts: true
-  roles:
-    - cassandra
