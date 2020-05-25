@@ -39,6 +39,17 @@ func fibR(n int64) *big.Int {
 	return result.Add(fibR(n-2), fibR(n-1))
 }
 
+var cache = []big.Int{*big.NewInt(0), *big.NewInt(1)}
+
+func fib(n int64) *big.Int {
+	if n < int64(len(cache)) {
+		return &cache[n]
+	}
+	result := big.NewInt(0)
+	cache = append(cache, *result.Add(fib(n-2), fib(n-1)))
+	return &cache[len(cache)-1]
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: ", os.Args[0], " <n - integer>")
@@ -54,7 +65,7 @@ func main() {
 	n := int64(t)
 
 	// result := fibI(n)
-	result := fibR(n)
+	result := fib(n)
 	fmt.Println(result.String())
 
 }
