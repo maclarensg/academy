@@ -1,0 +1,46 @@
+package main
+
+import "fmt"
+
+func rotateImage(a [][]int) [][]int {
+	return reverse(transpose(a))
+}
+
+func transpose(a [][]int) (res [][]int) {
+	size := len(a)
+	res = make([][]int, size)
+	for i := 0; i < size; i++ {
+		res[i] = make([]int, size)
+	}
+	for x := 0; x < size; x++ {
+		for y := 0; y < size; y++ {
+			res[x][y] = a[y][x]
+		}
+	}
+	return res
+}
+
+func reverse(a [][]int) (res [][]int) {
+	size := len(a)
+	res = make([][]int, size)
+	for i := 0; i < size; i++ {
+		res[i] = make([]int, size)
+	}
+
+	for y := 0; y < size; y++ {
+		for x := 0; x < size; x++ {
+			res[y][x] = a[y][size-x-1]
+		}
+	}
+
+	return res
+}
+
+func main() {
+	m := [][]int{
+		[]int{1, 2, 3},
+		[]int{4, 5, 6},
+		[]int{7, 8, 9},
+	}
+	fmt.Println(rotateImage(m))
+}

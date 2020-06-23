@@ -1,0 +1,102 @@
+package main
+
+import "fmt"
+
+func addTwoHugeNumbers(a *ListNode, b *ListNode) *ListNode {
+	aArr := linkedListToIntArray(a)
+	bArr := linkedListToIntArray(b)
+	tArr := sumArr(aArr, bArr)
+	res := newNode(tArr[len(tArr)-1])
+	for i := len(tArr) - 2; i >= 0; i-- {
+		res.add(tArr[i])
+	}
+	return res
+}
+
+func sumArr(a []int, b []int) (res []int) {
+
+	max := maxLen(a, b)
+	carry := 0
+	for i := 0; i < max; i++ {
+		if i < len(a) && i < len(b) {
+			sum := (a[i] + b[i] + carry) % 10000
+			carry = (a[i] + b[i] + carry) / 10000
+			res = append(res, sum)
+			continue
+		}
+		if i < len(a) {
+			res = append(res, a[i]+carry)
+			carry = 0
+		}
+		if i < len(b) {
+			res = append(res, b[i]+carry)
+			carry = 0
+		}
+	}
+	return res
+}
+
+func maxLen(a []int, b []int) int {
+	max := len(a)
+	if len(b) > max {
+		max = len(b)
+	}
+	return max
+}
+
+func linkedListToIntArray(l *ListNode) []int {
+	var a []int
+	for l != nil {
+		a = append([]int{l.Value.(int)}, a...)
+		l = l.Next
+	}
+	return a
+}
+
+// ListNode struct
+type ListNode struct {
+	Value interface{}
+	Next  *ListNode
+}
+
+func newNode(v interface{}) *ListNode {
+	return &ListNode{
+		Value: v,
+	}
+}
+
+func (l *ListNode) print() {
+	for l != nil {
+		format := "%d,"
+		if l.Next == nil {
+			format = "%d"
+		}
+		fmt.Printf(format, l.Value.(int))
+		l = l.Next
+	}
+	fmt.Println()
+}
+
+func (l *ListNode) add(v interface{}) {
+	for l != nil {
+		if l.Next == nil {
+			l.Next = newNode(v)
+			return
+		}
+		l = l.Next
+	}
+}
+
+func main() {
+	a := newNode(9876)
+	a.add(5432)
+	a.add(1999)
+	a.print()
+
+	b := newNode(1)
+	b.add(8001)
+	b.print()
+
+	c := addTwoHugeNumbers(a, b)
+	c.print()
+}
